@@ -1,4 +1,8 @@
+"use client";
+
+import Announcements from "@/components/Announcements";
 import AttendanceChart from "@/components/AttendanceChart";
+import EventCalendar from "@/components/EventCalender";
 import FinanceChart from "@/components/FinanceChart";
 import StudentChart from "@/components/StudentChart";
 import UserCard from "@/components/UserCard";
@@ -30,7 +34,10 @@ const AdminPage = () => {
         </div>
       </div>
       {/* RIght */}
-      <div className="w-full lg:w-1/3">right</div>
+      <div className="w-full lg:w-1/3">
+        <EventCalendar />
+        <Announcements />
+      </div>
     </div>
   );
 };
