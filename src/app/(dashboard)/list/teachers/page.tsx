@@ -108,6 +108,15 @@ const TeacherListPage = async ({
         case "classId":
           query.lessons = { some: { classId: { equals: parseInt(value) } } };
           break;
+        case "search":
+          query.OR = [
+            { name: { contains: value, mode: "insensitive" } },
+            { username: { contains: value, mode: "insensitive" } },
+            { email: { contains: value, mode: "insensitive" } },
+            { phone: { contains: value, mode: "insensitive" } },
+            { address: { contains: value, mode: "insensitive" } },
+          ];
+          break;
       }
     }
   }
