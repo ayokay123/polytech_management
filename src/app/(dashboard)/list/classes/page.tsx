@@ -4,7 +4,7 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import { classesData, role } from "@/lib/data";
 import prisma from "@/lib/prisma";
-import { Class, Grade, Teacher } from "@prisma/client";
+import { Class, Grade, Prisma, Teacher } from "@prisma/client";
 import Image from "next/image";
 
 const columns = [
@@ -68,8 +68,27 @@ const ClassListPage = async ({
 
   const p = page ? parseInt(page) : 1;
 
+  const query: Prisma.ClassWhereInput = {};
+  if (queryParams) {
+    for (const [key, value] of Object.entries(queryParams)) {
+      if (value !== undefined) {
+        switch (key) {
+          case "supervisorId":
+            query.supervisorId = value;
+            break;
+          case "search":
+            query.name = { contains: value, mode: "insensitive" };
+            break;
+          default:
+            break;
+        }
+      }
+    }
+  }
+
   const [classes, count] = await prisma.$transaction([
     prisma.class.findMany({
+      where: query,
       include: {
         grade: true,
         supervisor: true,
@@ -77,7 +96,7 @@ const ClassListPage = async ({
       take: 10,
       skip: (p - 1) * 10,
     }),
-    prisma.class.count(),
+    prisma.class.count({ where: query }),
   ]);
 
   return (

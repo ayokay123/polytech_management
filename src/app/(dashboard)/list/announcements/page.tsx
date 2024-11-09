@@ -4,7 +4,7 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import { announcementsData, role } from "@/lib/data";
 import prisma from "@/lib/prisma";
-import { Announcement, Class } from "@prisma/client";
+import { Announcement, Class, Prisma } from "@prisma/client";
 import Image from "next/image";
 
 const columns = [
@@ -60,15 +60,31 @@ const AnnouncementListPage = async ({
 
   const p = page ? parseInt(page) : 1;
 
+  const query: Prisma.AnnouncementWhereInput = {};
+  if (queryParams) {
+    for (const [key, value] of Object.entries(queryParams)) {
+      if (value !== undefined) {
+        switch (key) {
+          case "search":
+            query.title = { contains: value, mode: "insensitive" };
+            break;
+          default:
+            break;
+        }
+      }
+    }
+  }
+
   const [announcements, count] = await prisma.$transaction([
     prisma.announcement.findMany({
+      where: query,
       include: {
         class: true,
       },
       take: 10,
       skip: (p - 1) * 10,
     }),
-    prisma.announcement.count(),
+    prisma.announcement.count({ where: query }),
   ]);
 
   return (

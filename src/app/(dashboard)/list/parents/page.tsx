@@ -4,7 +4,7 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import { parentsData, role } from "@/lib/data";
 import prisma from "@/lib/prisma";
-import { Parent, Student } from "@prisma/client";
+import { Parent, Prisma, Student } from "@prisma/client";
 import Image from "next/image";
 
 const columns = [
@@ -71,15 +71,53 @@ const ParentListPage = async ({
 
   const p = page ? parseInt(page) : 1;
 
+  const query: Prisma.ParentWhereInput = {};
+  if (queryParams) {
+    for (const [key, value] of Object.entries(queryParams)) {
+      if (value === undefined) continue;
+      switch (key) {
+        case "search":
+          query.OR = [
+            {
+              name: {
+                contains: value,
+                mode: "insensitive",
+              },
+            },
+            {
+              email: {
+                contains: value,
+                mode: "insensitive",
+              },
+            },
+            {
+              phone: {
+                contains: value,
+                mode: "insensitive",
+              },
+            },
+            {
+              address: {
+                contains: value,
+                mode: "insensitive",
+              },
+            },
+          ];
+          break;
+      }
+    }
+  }
+
   const [parents, count] = await prisma.$transaction([
     prisma.parent.findMany({
+      where: query,
       include: {
         students: true,
       },
       take: 10,
       skip: (p - 1) * 10,
     }),
-    prisma.parent.count(),
+    prisma.parent.count({ where: query }),
   ]);
 
   return (

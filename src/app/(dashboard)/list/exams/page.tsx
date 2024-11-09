@@ -4,10 +4,14 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import { examsData, role } from "@/lib/data";
 import prisma from "@/lib/prisma";
-import { Class, Exam, Lesson, Subject, Teacher } from "@prisma/client";
+import { Class, Exam, Lesson, Prisma, Subject, Teacher } from "@prisma/client";
 import Image from "next/image";
 
 const columns = [
+  {
+    header: "Title",
+    accessor: "title",
+  },
   {
     header: "Subject Name",
     accessor: "name",
@@ -45,6 +49,7 @@ const renderRow = (
     key={item.id}
     className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
   >
+    <td>{item.title}</td>
     <td className="flex items-center gap-4 p-4">{item.lesson.subject.name}</td>
     <td>{item.lesson.class.name}</td>
     <td className="hidden md:table-cell">
@@ -76,8 +81,33 @@ const ExamListPage = async ({
 
   const p = page ? parseInt(page) : 1;
 
+  const query: Prisma.ExamWhereInput = {};
+  query.lesson = {};
+  if (queryParams) {
+    for (const [key, value] of Object.entries(queryParams)) {
+      if (value !== undefined) {
+        switch (key) {
+          case "classId":
+            query.lesson.classId = parseInt(value);
+            break;
+          case "teacherId":
+            query.lesson.teacherId = value;
+            break;
+          case "search":
+            query.lesson.subject = {
+              name: { contains: value, mode: "insensitive" },
+            };
+            break;
+          default:
+            break;
+        }
+      }
+    }
+  }
+
   const [exams, count] = await prisma.$transaction([
     prisma.exam.findMany({
+      where: query,
       include: {
         lesson: {
           select: {
@@ -90,7 +120,7 @@ const ExamListPage = async ({
       take: 10,
       skip: (p - 1) * 10,
     }),
-    prisma.exam.count(),
+    prisma.exam.count({ where: query }),
   ]);
 
   return (

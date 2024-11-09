@@ -4,7 +4,7 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import { eventsData, role } from "@/lib/data";
 import prisma from "@/lib/prisma";
-import { Class, Event } from "@prisma/client";
+import { Class, Event, Prisma } from "@prisma/client";
 import Image from "next/image";
 
 const columns = [
@@ -83,16 +83,33 @@ const EventListPage = async ({
 
   const p = page ? parseInt(page) : 1;
 
+  const query: Prisma.EventWhereInput = {};
+  if (queryParams) {
+    for (const [key, value] of Object.entries(queryParams)) {
+      if (value !== undefined) {
+        switch (key) {
+          case "search":
+            query.title = { contains: value, mode: "insensitive" };
+            break;
+          default:
+            break;
+        }
+      }
+    }
+  }
+
   const [events, count] = await prisma.$transaction([
     prisma.event.findMany({
+      where: query,
       include: {
         class: true,
       },
       take: 10,
       skip: (p - 1) * 10,
     }),
-    prisma.event.count(),
+    prisma.event.count({ where: query }),
   ]);
+
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
       {/* TOP */}

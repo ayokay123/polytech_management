@@ -4,10 +4,14 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import { assignmentsData, role } from "@/lib/data";
 import prisma from "@/lib/prisma";
-import { Assignment, Class, Subject, Teacher } from "@prisma/client";
+import { Assignment, Class, Prisma, Subject, Teacher } from "@prisma/client";
 import Image from "next/image";
 
 const columns = [
+  {
+    header: "Title",
+    accessor: "title",
+  },
   {
     header: "Subject Name",
     accessor: "name",
@@ -26,10 +30,10 @@ const columns = [
     accessor: "dueDate",
     className: "hidden md:table-cell",
   },
-  {
-    header: "Actions",
-    accessor: "action",
-  },
+  // {
+  //   header: "Actions",
+  //   accessor: "action",
+  // },
 ];
 
 const renderRow = (
@@ -45,6 +49,7 @@ const renderRow = (
     key={item.id}
     className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
   >
+    <td>{item.title}</td>
     <td className="flex items-center gap-4 p-4">{item.lesson.subject.name}</td>
     <td>{item.lesson.class.name}</td>
     <td className="hidden md:table-cell">
@@ -53,7 +58,7 @@ const renderRow = (
     <td className="hidden md:table-cell">
       {new Intl.DateTimeFormat("en-US").format(item.dueDate)}
     </td>
-    <td>
+    {/* <td>
       <div className="flex items-center gap-2">
         {role === "admin" ||
           (role === "teacher" && (
@@ -63,7 +68,7 @@ const renderRow = (
             </>
           ))}
       </div>
-    </td>
+    </td> */}
   </tr>
 );
 
@@ -76,8 +81,28 @@ const AssignmentListPage = async ({
 
   const p = page ? parseInt(page) : 1;
 
+  const query: Prisma.AssignmentWhereInput = {};
+  if (queryParams) {
+    for (const [key, value] of Object.entries(queryParams)) {
+      if (value === undefined) continue;
+      switch (key) {
+        case "search":
+          query.OR = [
+            {
+              title: {
+                contains: value,
+                mode: "insensitive",
+              },
+            },
+          ];
+          break;
+      }
+    }
+  }
+
   const [assignments, count] = await prisma.$transaction([
     prisma.assignment.findMany({
+      where: query,
       include: {
         lesson: {
           select: {
@@ -90,7 +115,7 @@ const AssignmentListPage = async ({
       take: 10,
       skip: (p - 1) * 10,
     }),
-    prisma.assignment.count(),
+    prisma.assignment.count({ where: query }),
   ]);
 
   return (

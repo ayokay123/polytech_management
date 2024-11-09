@@ -91,16 +91,23 @@ const StudentListPage = async ({
   const query: Prisma.StudentWhereInput = {};
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
-      if (!value) continue;
-      switch (key) {
-        case "search":
-          query.OR = [
-            { name: { contains: value, mode: "insensitive" } },
-            { id: { contains: value, mode: "insensitive" } },
-            { phone: { contains: value, mode: "insensitive" } },
-            { address: { contains: value, mode: "insensitive" } },
-          ];
-          break;
+      if (value !== undefined) {
+        switch (key) {
+          case "teacherId":
+            query.class = {
+              lessons: {
+                some: {
+                  teacherId: value,
+                },
+              },
+            };
+            break;
+          case "search":
+            query.name = { contains: value, mode: "insensitive" };
+            break;
+          default:
+            break;
+        }
       }
     }
   }

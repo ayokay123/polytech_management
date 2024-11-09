@@ -4,7 +4,14 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import { resultsData, role } from "@/lib/data";
 import prisma from "@/lib/prisma";
-import { Class, Result, Student, Subject, Teacher } from "@prisma/client";
+import {
+  Class,
+  Prisma,
+  Result,
+  Student,
+  Subject,
+  Teacher,
+} from "@prisma/client";
 import Image from "next/image";
 
 const columns = [
@@ -107,8 +114,30 @@ const ResultListPage = async ({
 
   const p = page ? parseInt(page) : 1;
 
+  const query: Prisma.ResultWhereInput = {};
+  if (queryParams) {
+    for (const [key, value] of Object.entries(queryParams)) {
+      if (value !== undefined) {
+        switch (key) {
+          case "studentId":
+            query.studentId = value;
+            break;
+          case "search":
+            query.OR = [
+              { exam: { title: { contains: value, mode: "insensitive" } } },
+              { student: { name: { contains: value, mode: "insensitive" } } },
+            ];
+            break;
+          default:
+            break;
+        }
+      }
+    }
+  }
+
   const [results, count] = await prisma.$transaction([
     prisma.result.findMany({
+      where: query,
       include: {
         student: { select: { name: true, surname: true } },
         exam: {
@@ -135,7 +164,7 @@ const ResultListPage = async ({
       take: 10,
       skip: 10 * (p - 1),
     }),
-    prisma.result.count(),
+    prisma.result.count({ where: query }),
   ]);
 
   return (

@@ -4,7 +4,7 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import { role, subjectsData } from "@/lib/data";
 import prisma from "@/lib/prisma";
-import { Subject, Teacher } from "@prisma/client";
+import { Prisma, Subject, Teacher } from "@prisma/client";
 import Image from "next/image";
 
 const columns = [
@@ -54,16 +54,33 @@ const SubjectListPage = async ({
 
   const p = page ? parseInt(page) : 1;
 
+  const query: Prisma.SubjectWhereInput = {};
+  if (queryParams) {
+    for (const [key, value] of Object.entries(queryParams)) {
+      if (value !== undefined) {
+        switch (key) {
+          case "search":
+            query.name = { contains: value, mode: "insensitive" };
+            break;
+          default:
+            break;
+        }
+      }
+    }
+  }
+
   const [subjects, count] = await prisma.$transaction([
     prisma.subject.findMany({
+      where: query,
       include: {
         teachers: true,
       },
       take: 10,
       skip: (p - 1) * 10,
     }),
-    prisma.subject.count(),
+    prisma.subject.count({ where: query }),
   ]);
+
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
       {/* TOP */}
