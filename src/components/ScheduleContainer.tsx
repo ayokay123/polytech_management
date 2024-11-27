@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
-import Schedule from "./Schedule";
 import { adjustScheduleToCurrentWeek } from "@/lib/utils";
+import Schedule from "./Schedule";
 
 const ScheduleContainer = async ({
   type,

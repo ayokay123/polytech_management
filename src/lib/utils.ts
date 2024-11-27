@@ -1,3 +1,5 @@
+import { auth, currentUser } from "@clerk/nextjs/server";
+
 const getLatestMonday = (): Date => {
   const today = new Date();
   const dayOfWeek = today.getDay();
@@ -38,4 +40,9 @@ export const adjustScheduleToCurrentWeek = (
       end: adjustedEndDate,
     };
   });
+};
+
+export const getUserRole = async (): Promise<string | null> => {
+  const user = await currentUser();
+  return user?.publicMetadata.role as string;
 };
