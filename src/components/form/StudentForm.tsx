@@ -5,6 +5,12 @@ import { useForm } from "react-hook-form";
 import InputField from "../InputField";
 import Image from "next/image";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import {
+  studentSchema,
+  StudentSchema,
+  teacherSchema,
+  TeacherSchema,
+} from "@/lib/zodValidation";
 import { useFormState } from "react-dom";
 import {
   createStudent,
@@ -15,7 +21,6 @@ import {
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { CldUploadWidget } from "next-cloudinary";
-import { studentSchema, StudentSchema } from "@/lib/zodValidation";
 
 const StudentForm = ({
   type,
@@ -62,7 +67,7 @@ const StudentForm = ({
     }
   }, [state, router, type, setOpen]);
 
-  const { grades, classes } = relatedData;
+  const { grades, classes, parents } = relatedData;
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -99,25 +104,6 @@ const StudentForm = ({
       <span className="text-xs text-gray-400 font-medium">
         Personal Information
       </span>
-      <CldUploadWidget
-        uploadPreset="school"
-        onSuccess={(result, { widget }) => {
-          setImg(result.info);
-          widget.close();
-        }}
-      >
-        {({ open }) => {
-          return (
-            <div
-              className="text-xs text-gray-500 flex items-center gap-2 cursor-pointer"
-              onClick={() => open()}
-            >
-              <Image src="/upload.png" alt="" width={28} height={28} />
-              <span>Upload a photo</span>
-            </div>
-          );
-        }}
-      </CldUploadWidget>
       <div className="flex justify-between flex-wrap gap-4">
         <InputField
           label="First Name"
@@ -162,13 +148,27 @@ const StudentForm = ({
           error={errors.birthday}
           type="date"
         />
-        <InputField
-          label="Parent Id"
-          name="parentId"
-          defaultValue={data?.parentId}
-          register={register}
-          error={errors.parentId}
-        />
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <label className="text-xs text-gray-500">Parent</label>
+          <select
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            {...register("parentId")}
+            defaultValue={data?.parentId}
+          >
+            {parents.map(
+              (parentItem: { id: number; name: string; surname: string }) => (
+                <option value={parentItem.id} key={parentItem.id}>
+                  ({parentItem.name} {parentItem.surname})
+                </option>
+              )
+            )}
+          </select>
+          {errors.parentId?.message && (
+            <p className="text-xs text-red-400">
+              {errors.parentId.message.toString()}
+            </p>
+          )}
+        </div>
         {data && (
           <InputField
             label="Id"

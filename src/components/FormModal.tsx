@@ -14,11 +14,6 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useFormState } from "react-dom";
 import { toast } from "react-toastify";
 import { FormContainerProps } from "./FormContainer";
-import SubjectForm from "./form/SubjectForm";
-import ClassForm from "./form/ClassForm";
-import TeacherForm from "./form/TeacherForm";
-import StudentForm from "./form/StudentForm";
-import ExamForm from "./form/ExamForm";
 
 const deleteActionMap = {
   subject: deleteSubject,
@@ -34,6 +29,22 @@ const deleteActionMap = {
   event: deleteSubject,
   announcement: deleteSubject,
 };
+
+const TeacherForm = dynamic(() => import("./form/TeacherForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const StudentForm = dynamic(() => import("./form/StudentForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const SubjectForm = dynamic(() => import("./form/SubjectForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const ClassForm = dynamic(() => import("./form/ClassForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const ExamForm = dynamic(() => import("./form/ExamForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
 
 const forms: {
   [key: string]: (
@@ -112,7 +123,16 @@ const FormModal = ({
 
     useEffect(() => {
       if (state.success) {
-        toast(`${table} has been deleted!`);
+        toast(`${table} has been deleted!`, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
         setOpen(false);
         router.refresh();
       }
