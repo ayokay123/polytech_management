@@ -1,9 +1,10 @@
 import Announcements from "@/components/Announcements";
+import FormContainer from "@/components/FormContainer";
 import Performance from "@/components/Performance";
-import Schedule from "@/components/Schedule";
 import ScheduleContainer from "@/components/ScheduleContainer";
 import StudentAttendanceCard from "@/components/StudentAttendanceCard";
 import prisma from "@/lib/prisma";
+import { auth } from "@clerk/nextjs/server";
 import { Class, Student } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,6 +16,9 @@ const SingleStudentPage = async ({
 }: {
   params: { id: string };
 }) => {
+  const { sessionClaims } = await auth();
+  const role = (sessionClaims?.metadata as { role?: string })?.role;
+
   const student:
     | (Student & {
         class: Class & { _count: { lessons: number } };
@@ -52,9 +56,9 @@ const SingleStudentPage = async ({
                 <h1 className="text-xl font-semibold">
                   {student.name + " " + student.surname}
                 </h1>
-                {/* {role === "admin" && (
+                {role === "admin" && (
                   <FormContainer table="student" type="update" data={student} />
-                )} */}
+                )}
               </div>
               <p className="text-sm text-gray-500">
                 Lorem ipsum, dolor sit amet consectetur adipisicing elit.
