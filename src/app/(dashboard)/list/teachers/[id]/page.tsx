@@ -1,4 +1,3 @@
-import Announcements from "@/components/Announcements";
 import FormContainer from "@/components/FormContainer";
 import Performance from "@/components/Performance";
 import ScheduleContainer from "@/components/ScheduleContainer";
@@ -188,7 +187,6 @@ const SingleTeacherPage = async ({
           </div>
         </div>
         <Performance />
-        <Announcements />
       </div>
     </div>
   );

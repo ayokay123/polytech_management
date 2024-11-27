@@ -1,5 +1,3 @@
-import Announcements from "@/components/Announcements";
-import EventCalendar from "@/components/EventCalender";
 import ScheduleContainer from "@/components/ScheduleContainer";
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
@@ -22,10 +20,7 @@ const StudentPage = async () => {
           <ScheduleContainer type="classId" id={classItem[0].id} />
         </div>
       </div>
-      <div className="w-full xl:w-1/3 flex flex-col gap-8">
-        <EventCalendar />
-        <Announcements />
-      </div>
+      <div className="w-full xl:w-1/3 flex flex-col gap-8"></div>
     </div>
   );
 };

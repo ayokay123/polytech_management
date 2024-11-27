@@ -1,4 +1,3 @@
-import Announcements from "@/components/Announcements";
 import ScheduleContainer from "@/components/ScheduleContainer";
 import { auth } from "@clerk/nextjs/server";
 
@@ -12,9 +11,7 @@ const TeacherPage = async () => {
           <ScheduleContainer type="teacherId" id={userId!} />
         </div>
       </div>
-      <div className="w-full xl:w-1/3 flex flex-col gap-8">
-        <Announcements />
-      </div>
+      <div className="w-full xl:w-1/3 flex flex-col gap-8"></div>
     </div>
   );
 };
