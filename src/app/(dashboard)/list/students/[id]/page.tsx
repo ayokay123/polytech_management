@@ -190,7 +190,7 @@ const SingleStudentPage = async ({
             </Link>
           </div>
         </div>
-        <Performance />
+        <Performance userId={id} />
       </div>
     </div>
   );
