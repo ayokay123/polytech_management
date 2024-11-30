@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  deleteAttendance,
   deleteClass,
   deleteExam,
   deleteStudent,
@@ -25,7 +26,7 @@ const deleteActionMap = {
   lesson: deleteSubject,
   assignment: deleteSubject,
   result: deleteSubject,
-  attendance: deleteSubject,
+  attendance: deleteAttendance,
   event: deleteSubject,
   announcement: deleteSubject,
 };
@@ -43,6 +44,9 @@ const ClassForm = dynamic(() => import("./form/ClassForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const ExamForm = dynamic(() => import("./form/ExamForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const AttendanceForm = dynamic(() => import("./form/AttendanceForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 
@@ -94,6 +98,14 @@ const forms: {
       relatedData={relatedData}
     />
   ),
+  attendance: (setOpen, type, data, relatedData) => (
+    <AttendanceForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
 };
 
 const FormModal = ({
@@ -137,6 +149,8 @@ const FormModal = ({
         router.refresh();
       }
     }, [state, router]);
+
+    console.log({ table });
 
     return type === "delete" && id ? (
       <form action={formAction} className="p-4 flex flex-col gap-4">

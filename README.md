@@ -15,7 +15,8 @@ bun dev
 ## TODO
 
 - [ ] Add a form for parents
-- [ ] Fix logout redirection
-- [ ] Add attendance list page
-- [ ] Add form for attendance
-- [ ] Add AI or ML for performance analysis !!!!
+- [X] Fix logout redirection
+- [X] Add attendance list page
+- [X] Add form for attendance
+- [X] Add AI or ML for performance analysis !!!!
+- [ ] Add attendance sheet for whole class?

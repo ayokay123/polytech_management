@@ -1,6 +1,7 @@
 "use server";
 
 import {
+  AttendanceSchema,
   ClassSchema,
   ExamSchema,
   StudentSchema,
@@ -410,6 +411,70 @@ export const deleteExam = async (
     await prisma.exam.delete({
       where: {
         id: parseInt(id),
+      },
+    });
+
+    return { success: true, error: false };
+  } catch (err) {
+    console.log(err);
+    return { success: false, error: true };
+  }
+};
+
+export const deleteAttendance = async (
+  currentState: CurrentState,
+  data: FormData
+) => {
+  const id = data.get("id") as string;
+  try {
+    await prisma.attendance.delete({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    return { success: true, error: false };
+  } catch (err) {
+    console.log(err);
+    return { success: false, error: true };
+  }
+};
+
+export const createAttendance = async (
+  currentState: CurrentState,
+  data: AttendanceSchema
+) => {
+  try {
+    await prisma.attendance.create({
+      data: {
+        lessonId: data.lessonId,
+        studentId: data.studentId,
+        present: data.present === "present" ? true : false,
+        date: data.date,
+      },
+    });
+
+    return { success: true, error: false };
+  } catch (err) {
+    console.log(err);
+    return { success: false, error: true };
+  }
+};
+
+export const updateAttendance = async (
+  currentState: CurrentState,
+  data: AttendanceSchema
+) => {
+  try {
+    await prisma.attendance.update({
+      where: {
+        id: data.id,
+      },
+      data: {
+        lessonId: data.lessonId,
+        studentId: data.studentId,
+        present: data.present === "present" ? true : false,
+        date: data.date,
       },
     });
 
