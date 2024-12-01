@@ -21,4 +21,4 @@ bun dev
 - [X] Add AI or ML for performance analysis !!!!
 - [ ] Add attendance sheet for whole class?
 - [ ] Add calender to teacher and student to check the upcoming exams and assignments
-- [ ] Drop tables and use seeds for parents, teachers, students, assignments, exams, attendance, results
+- [X] Drop tables and use seeds for parents, teachers, students, assignments, exams, attendance, results
