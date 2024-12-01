@@ -3,9 +3,18 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 const getLatestMonday = (): Date => {
   const today = new Date();
   const dayOfWeek = today.getDay();
-  const daysSinceMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-  const latestMonday = today;
-  latestMonday.setDate(today.getDate() - daysSinceMonday);
+
+  // If it's Sunday (0), calculate next Monday
+  const daysUntilNextMonday = dayOfWeek === 0 ? 1 : 0; // If it's Sunday, add 1 to get next Monday, otherwise do nothing
+  const latestMonday = new Date(today);
+
+  latestMonday.setDate(
+    today.getDate() + ((daysUntilNextMonday + (7 - dayOfWeek)) % 7)
+  );
+
+  // Reset time to midnight (optional, for better consistency)
+  latestMonday.setHours(0, 0, 0, 0);
+
   return latestMonday;
 };
 
