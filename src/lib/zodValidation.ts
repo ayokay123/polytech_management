@@ -125,7 +125,7 @@ export type ParentSchema = z.infer<typeof parentSchema>;
 export const lessonSchema = z.object({
   id: z.coerce.number().optional(),
   name: z.string().min(1, { message: "Name is required!" }),
-  day: z.enum(["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"], {
+  day: z.string({
     message: "Day is required!",
   }),
   startTime: z.coerce.date({ message: "Start time is required!" }),
