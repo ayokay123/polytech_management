@@ -194,6 +194,8 @@ const ResultListPage = async ({
       score: item.score,
       className: assessment.lesson.class.name,
       startTime: isExam ? assessment.startTime : assessment.startDate,
+      examId: isExam ? item.examId : null,
+      assignmentId: isExam ? null : item.assignmentId,
     };
   });
 

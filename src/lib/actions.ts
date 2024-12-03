@@ -735,12 +735,18 @@ export const createResult = async (
   data: ResultSchema
 ) => {
   try {
+    console.log("result", {
+      studentId: data.studentId,
+      score: data.score,
+      assignmentId: data.assignmentId || null,
+      examId: data.examId ?? null,
+    });
     await prisma.result.create({
       data: {
         studentId: data.studentId,
         score: data.score,
-        assignmentId: data.assignmentId,
-        examId: data.examId,
+        assignmentId: data.assignmentId || null,
+        examId: data.examId || null,
       },
     });
 
