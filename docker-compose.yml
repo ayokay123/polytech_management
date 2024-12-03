@@ -12,6 +12,33 @@ services:
       - "5432:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
+  nextjs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nextjs-app
+    environment:
+      DATABASE_URL: postgres://myuser:mypassword@db:5432/mydatabase
+    depends_on:
+      - db
+      - train
+    ports:
+      - "3000:3000"
+    command: "npm run dev" # Replace with your preferred command for production (e.g., npm run start)
+
+  train:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: training-service
+    environment:
+      PYTHONUNBUFFERED: 1
+    entrypoint: ["python3", "ml/train_model.py", "<", "performance_data.json"]
+    volumes:
+      - ./ml:/app/ml
+      - ./data:/app/data
+    depends_on:
+      - db
 
 volumes:
   db-data:

@@ -1,4 +1,4 @@
-## Getting Started
+# Getting Started
 
 First, run the development server:
 
@@ -23,3 +23,4 @@ bun dev
 - [ ] Add calender to teacher and student to check the upcoming exams and assignments
 - [X] Drop tables and use seeds for parents, teachers, students, assignments, exams, attendance, results
 - [ ] Dockerize the environment for easy deployment
+- [ ] Add push notification to parents, students, and teachers about new events
