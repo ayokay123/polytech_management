@@ -22,3 +22,4 @@ bun dev
 - [ ] Add attendance sheet for whole class?
 - [ ] Add calender to teacher and student to check the upcoming exams and assignments
 - [X] Drop tables and use seeds for parents, teachers, students, assignments, exams, attendance, results
+- [ ] Dockerize the environment for easy deployment

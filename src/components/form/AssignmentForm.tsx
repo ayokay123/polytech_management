@@ -3,19 +3,26 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
-  createExam,
-  createSubject,
-  updateExam,
-  updateSubject,
-} from "@/lib/actions";
+  assignmentSchema,
+  AssignmentSchema,
+  lessonSchema,
+  LessonSchema,
+} from "@/lib/zodValidation";
 import { useFormState } from "react-dom";
-import { Dispatch, SetStateAction, useEffect } from "react";
-import { toast } from "react-toastify";
+import {
+  createAssignment,
+  createLesson,
+  createStudent,
+  updateAssignment,
+  updateLesson,
+  updateStudent,
+} from "@/lib/actions";
 import { useRouter } from "next/navigation";
-import { examSchema, ExamSchema } from "@/lib/zodValidation";
+import { toast } from "react-toastify";
 
-const ExamForm = ({
+const AssignmentForm = ({
   type,
   data,
   setOpen,
@@ -30,12 +37,12 @@ const ExamForm = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ExamSchema>({
-    resolver: zodResolver(examSchema),
+  } = useForm<AssignmentSchema>({
+    resolver: zodResolver(assignmentSchema),
   });
 
   const [state, formAction] = useFormState(
-    type === "create" ? createExam : updateExam,
+    type === "create" ? createAssignment : updateAssignment,
     {
       success: false,
       error: false,
@@ -43,15 +50,16 @@ const ExamForm = ({
   );
 
   const onSubmit = handleSubmit((data) => {
-    console.log(data);
-    formAction(data);
+    formAction({ ...data });
   });
 
   const router = useRouter();
 
   useEffect(() => {
     if (state.success) {
-      toast(`Exam has been ${type === "create" ? "created" : "updated"}!`);
+      toast(
+        `Assignment has been ${type === "create" ? "created" : "updated"}!`
+      );
       setOpen(false);
       router.refresh();
     }
@@ -62,12 +70,13 @@ const ExamForm = ({
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold">
-        {type === "create" ? "Create a new exam" : "Update the exam"}
+        {type === "create"
+          ? "Create a new assignment"
+          : "Update the assignment"}
       </h1>
-
       <div className="flex justify-between flex-wrap gap-4">
         <InputField
-          label="Exam title"
+          label="Title"
           name="title"
           defaultValue={data?.title}
           register={register}
@@ -75,30 +84,20 @@ const ExamForm = ({
         />
         <InputField
           label="Start Date"
-          name="startTime"
-          defaultValue={data?.startTime}
+          name="startDate"
+          defaultValue={data?.startDate.toISOString().split("T")[0]}
           register={register}
-          error={errors?.startTime}
-          type="datetime-local"
+          error={errors.startDate}
+          type="date"
         />
         <InputField
-          label="End Date"
-          name="endTime"
-          defaultValue={data?.endTime}
+          label="Due Date"
+          name="dueDate"
+          defaultValue={data?.dueDate.toISOString().split("T")[0]}
           register={register}
-          error={errors?.endTime}
-          type="datetime-local"
+          error={errors.dueDate}
+          type="date"
         />
-        {data && (
-          <InputField
-            label="Id"
-            name="id"
-            defaultValue={data?.id}
-            register={register}
-            error={errors?.id}
-            hidden
-          />
-        )}
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Lesson</label>
           <select
@@ -119,14 +118,24 @@ const ExamForm = ({
           )}
         </div>
       </div>
+      {data && (
+        <InputField
+          label="Id"
+          name="id"
+          defaultValue={data?.id}
+          register={register}
+          error={errors?.id}
+          hidden
+        />
+      )}
       {state.error && (
         <span className="text-red-500">Something went wrong!</span>
       )}
-      <button className="bg-blue-400 text-white p-2 rounded-md">
+      <button type="submit" className="bg-blue-400 text-white p-2 rounded-md">
         {type === "create" ? "Create" : "Update"}
       </button>
     </form>
   );
 };
 
-export default ExamForm;
+export default AssignmentForm;

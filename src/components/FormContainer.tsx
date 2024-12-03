@@ -107,11 +107,20 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
           classes: lessonClasses,
         };
         break;
+      case "assignment":
+        const assignmentLessons = await prisma.lesson.findMany({
+          where: {
+            ...(role === "teacher" ? { teacherId: currentUserId! } : {}),
+          },
+          select: { id: true, name: true },
+        });
+        relatedData = { lessons: assignmentLessons };
+        break;
+
       default:
         break;
     }
   }
-
   return (
     <div className="">
       <FormModal
